@@ -237,13 +237,13 @@ void OnSlave(void)
       LedToggle(); // LED闪烁
 
       // Ack with PONG frame
-      strncpy((char *)TXBuffer, PongMsg, sizeof(TXBuffer));
+      // strncpy((char *)TXBuffer, PongMsg, sizeof(TXBuffer));
 
       // crc_value = RadioComputeCRC(TXBuffer, 4, CRC_TYPE_IBM); // 计算得出要发送数据包CRC值
       // TXBuffer[4] = crc_value >> 8;
       // TXBuffer[5] = crc_value;
 
-      Radio->SetTxPacket(TXBuffer, strlen((const char *)TXBuffer));
+      // Radio->SetTxPacket(TXBuffer, strlen((const char *)TXBuffer));
       // }
       // }
     }
