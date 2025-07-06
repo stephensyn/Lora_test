@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.cpp": "cpp",
+        "*.json": "cpp",
+        "stdint.h": "c",
+        "sx1276-hal.h": "c",
+        "spi.h": "c",
+        "sx1276.h": "c",
+        "delay.h": "c",
+        "sx1276-lora.h": "c",
+        "sx1276-loramisc.h": "c",
+        "platform.h": "c",
+        "main.h": "c",
+        "sx1276-1278.h": "c"
+    }
+}
