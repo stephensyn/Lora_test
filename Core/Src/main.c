@@ -307,7 +307,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_SPI2_Init();
-
+  // HAL_UART_Transmit_IT(&huart1, (uint8_t *)"Radio Demo Start\r\n", 18); // 启动时发送提示信息
   /* USER CODE BEGIN 2 */
   Radio = RadioDriverInit();
   if (Radio != NULL)

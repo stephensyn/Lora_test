@@ -422,6 +422,9 @@ void SX1276LoRaSetSyncWord(uint8_t value)
     char message[60];
     snprintf(message, sizeof(message), "Warning: SyncWord mismatch! Expected=%d, Actual=%d", LoRaSettings.SyncWordValue, SX1276LR->RegSyncWord);
     HAL_UART_Transmit(&huart1, (uint8_t *)message, strlen(message), HAL_MAX_DELAY);
+    // HAL_UART_Transmit_IT(&huart1, (uint8_t *)message, strlen(message)); // Send newline for better readability
+    // HAL_UART_Transmit_IT(&huart1, (uint8_t *)"hello\r\n", 10);
+
     // }
 }
 #endif // USE_SX1276_RADIO
