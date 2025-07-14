@@ -36,6 +36,7 @@ target_sources(stm32cubemx INTERFACE
     ../../Core/Src/spi.c
     ../../Core/Src/usart.c
     ../../Core/Src/dma.c
+    ../../Core/Src/uart_dma_queue.c
     ../../Core/Src/stm32f0xx_it.c
     ../../Core/Src/stm32f0xx_hal_msp.c
     ../../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c

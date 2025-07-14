@@ -639,7 +639,7 @@ uint32_t SX1276LoRaProcess(void)
         //
         if (DIO0 == 1) // TxDone
         {
-            HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nTX Running\r\n", 15); // 发送数据包
+            HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"TX Running\r", 12); // 发送数据包
             // Clear Irq
             SX1276Write(REG_LR_IRQFLAGS, RFLR_IRQFLAGS_TXDONE);
             RFLRState = RFLR_STATE_TX_DONE;
@@ -705,7 +705,7 @@ uint32_t SX1276LoRaProcess(void)
                 // RFLRState = RFLR_STATE_RX_INIT;                                        // 监测到有信号后，进入接收模式
                 result = RF_CHANNEL_ACTIVITY_DETECTED;                                 // 检测到信道活动
                                                                                        // HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD Detected\r\n", 14, 1000); // 调试输出
-                HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nCAD Detected\r\n", 14); // 发送数据包
+                HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"CAD Detected\r", 14); // 发送数据包
             }
             else
             {
@@ -715,7 +715,7 @@ uint32_t SX1276LoRaProcess(void)
                 // RFLRState = RFLR_STATE_CAD_INIT;
 
                 // HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD NOT Detected\r\n", 14, 1000); // 调试输出
-                HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nCAD NOT Detected\r\n", 14); // 发送数据包
+                HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"CAD NOT Detected\r", 18); // 发送数据包
                 result = RF_CHANNEL_EMPTY;
                 // HAL_Delay(1000); // 信道空闲
             }

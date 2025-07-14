@@ -39,3 +39,17 @@
 1289	1989	7739073082374469	CMakeFiles/Lora_test.dir/Core/Src/system_stm32f0xx.c.obj	d6558a1e61d056a0
 1285	1984	7739073082315460	CMakeFiles/Lora_test.dir/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart_ex.c.obj	e4340ca45d2cd651
 175	450	7741220764911069	Lora_test.elf	31817309cd94e1e8
+25	830	7741576661603447	CMakeFiles/Lora_test.dir/Core/Src/main.c.obj	54422a4d70985895
+39	288	7741577275378183	CMakeFiles/Lora_test.dir/Core/Src/uart_dma_queue.c.obj	86748fb875890484
+289	1564	7741577287666890	Lora_test.elf	90a5c1a10220e43a
+91	1836	7741580959929209	CMakeFiles/Lora_test.dir/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart.c.obj	7853368d3e90b116
+1837	3913	7741580980332165	Lora_test.elf	90a5c1a10220e43a
+2	177	7741582426780650	CMakeFiles/Lora_test.dir/Core/Src/main.c.obj	54422a4d70985895
+177	465	7741582429329017	Lora_test.elf	90a5c1a10220e43a
+8	160	7741587394357279	CMakeFiles/Lora_test.dir/Radio/Src/sx1276-LoRa.c.obj	e2d153bd533f40f1
+4	161	7741587394367309	CMakeFiles/Lora_test.dir/Core/Src/main.c.obj	54422a4d70985895
+161	405	7741587396031448	Lora_test.elf	90a5c1a10220e43a
+2	215	7741589465660190	CMakeFiles/Lora_test.dir/Core/Src/main.c.obj	54422a4d70985895
+215	450	7741589467659624	Lora_test.elf	90a5c1a10220e43a
+3	159	7741592299107276	CMakeFiles/Lora_test.dir/Core/Src/main.c.obj	54422a4d70985895
+159	364	7741592300825147	Lora_test.elf	90a5c1a10220e43a

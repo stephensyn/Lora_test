@@ -30,6 +30,8 @@
 #include "user.h"
 
 #include "sx1276-LoRa.h"
+
+#include "uart_dma_queue.h" // 添加UART DMA队列头文件
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -252,8 +254,13 @@ void OnSlave(void)
       // update_rx_history(RXBuffer, num_rx);
 
       // HAL_UART_Transmit(&huart1, RXBuffer, num_rx, HAL_MAX_DELAY);
-      HAL_UART_Transmit_DMA(&huart1, RXBuffer, num_rx);                     // 使用DMA发送数据包
-      HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RECIVED INF\r\n", 14); // 调试输出
+      // HAL_UART_Transmit_DMA(&huart1, RXBuffer, num_rx);                 // 使用DMA发送数据包
+      // 在RXBuffer末尾添加换行符和字符串结束符
+      RXBuffer[num_rx] = '\n';     // 添加换行符
+      RXBuffer[num_rx + 1] = '\0'; // 添加字符串结束符，确保安全
+      UART_TxQueue_Enqueue(RXBuffer, num_rx + 1);
+      // HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RECIVED INF\r\n", 14); // 调试输出
+      UART_TxQueue_Enqueue((uint8_t *)"RECIVED INF\r", 13); // 将调试信息放入队列中
       // crc_value = RXBuffer[num_rx - 2];
       // crc_value <<= 8;
       // crc_value |= RXBuffer[num_rx - 1];
@@ -288,11 +295,13 @@ void OnSlave(void)
       // Radio->parameterChange(temParameter); // 重新设置同步字
       // Radio->EnterCadMode(); // 进入载波侦听模式
     }
-    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RF_RX_DONE\r\n", 13); // 调试输出
+    // HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RF_RX_DONE\r", 13); // 调试输出
+    UART_TxQueue_Enqueue((uint8_t *)"RF_RX_DONE\r", 12); // 将调试信息放入队列中
     break;
 
   case RF_RX_TIMEOUT:
-    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RF_RX_TIMEOUT\r\n", 16); // 调试输出
+    // HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RF_RX_TIMEOUT\r", 16); // 调试输出
+    UART_TxQueue_Enqueue((uint8_t *)"RF_RX_TIMEOUT\r", 15); // 将调试信息放入队列中
     // 重新进入接收模式
     Radio->StartRx();
     // 改变同步字
@@ -339,6 +348,12 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
+  if (UART_TxQueue_Init() != 0)
+  {
+    // 处理初始化失败
+    while (1)
+      ;
+  }
   MX_SPI2_Init();
   MX_NVIC_Init(); // NVIC配置
 

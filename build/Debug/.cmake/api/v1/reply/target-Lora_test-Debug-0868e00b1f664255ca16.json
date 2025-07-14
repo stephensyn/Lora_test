@@ -135,7 +135,8 @@
 				34,
 				35,
 				36,
-				37
+				37,
+				38
 			]
 		},
 		{
@@ -190,7 +191,7 @@
 			"language" : "ASM",
 			"sourceIndexes" : 
 			[
-				38
+				39
 			]
 		}
 	],
@@ -260,14 +261,15 @@
 				34,
 				35,
 				36,
-				37
+				37,
+				38
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				38
+				39
 			]
 		}
 	],
@@ -355,6 +357,12 @@
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
 			"path" : "Core/Src/dma.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Core/Src/uart_dma_queue.c",
 			"sourceGroupIndex" : 0
 		},
 		{
