@@ -212,7 +212,29 @@ void OnSlave(void)
 {
   switch (Radio->Process())
   {
+  case RF_IDLE:
+    // 进入载波侦听模式
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nRF_IDLE\r\n", 12); // 调试输出
+    Radio->EnterCadMode();                                            // 进入载波侦听模式
+    break;
+  case RF_BUSY:
+
+    break;
+
+  case RF_CHANNEL_ACTIVITY_DETECTED:
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nRF_CHANNEL_ACTIVITY_DETECTED\r\n", 34); // 调试输出
+    // 进入接收模式
+    Radio->StartRx();
+    break;
+  case RF_CHANNEL_EMPTY:
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nRF_CHANNEL_EMPTY\r\n", 22); // 调试输出
+    // LoRaSettings.SyncWordValue++;         // 增加同步字参数
+    // Radio->parameterChange(temParameter); // 重新设置同步字
+    Radio->EnterCadMode(); // 进入载波侦听模式
+    break;
+
   case RF_RX_DONE:
+
     Radio->GetRxPacket(RXBuffer, (uint16_t *)&num_rx);
 
     if (num_rx > 0)
@@ -230,7 +252,8 @@ void OnSlave(void)
       // update_rx_history(RXBuffer, num_rx);
 
       // HAL_UART_Transmit(&huart1, RXBuffer, num_rx, HAL_MAX_DELAY);
-      HAL_UART_Transmit_DMA(&huart1, RXBuffer, num_rx); // 使用DMA发送数据包
+      HAL_UART_Transmit_DMA(&huart1, RXBuffer, num_rx);                     // 使用DMA发送数据包
+      HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RECIVED INF\r\n", 14); // 调试输出
       // crc_value = RXBuffer[num_rx - 2];
       // crc_value <<= 8;
       // crc_value |= RXBuffer[num_rx - 1];
@@ -263,14 +286,19 @@ void OnSlave(void)
       //   temParameter++; // 恢复为默认同步字
       // }
       // Radio->parameterChange(temParameter); // 重新设置同步字
-      Radio->EnterCadMode(); // 进入载波侦听模式
+      // Radio->EnterCadMode(); // 进入载波侦听模式
     }
-
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RF_RX_DONE\r\n", 13); // 调试输出
     break;
 
-  case RF_TX_DONE:
-
+  case RF_RX_TIMEOUT:
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"RF_RX_TIMEOUT\r\n", 16); // 调试输出
+    // 重新进入接收模式
     Radio->StartRx();
+    // 改变同步字
+    // LoRaSettings.SyncWordValue++;         // 增加同步字参数
+    // Radio->parameterChange(temParameter); // 重新设置同步字
+    // Radio->EnterCadMode(); // 进入载波侦听模式
 
     break;
 
@@ -319,6 +347,7 @@ int main(void)
   if (Radio != NULL)
   {
     Radio->Init();
+    // RFLRState = RFLR_STATE_IDLE; // LoRa状态机初始化为IDLE状态
   }
   else
   {
@@ -334,7 +363,7 @@ int main(void)
     strncpy((char *)TXBuffer, "PING123456", sizeof(TXBuffer)); // TXBuffer初始化
 
     Radio->SetTxPacket(TXBuffer, strlen((const char *)TXBuffer)); // 使用字符串长度作为数据包长度
-    masterSendCount++;
+    // masterSendCount++;
   }
   else
   {
@@ -351,16 +380,19 @@ int main(void)
 
     if (EnableMaster)
     {
+      // HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"Enter Master Mode\r\n", 20); // 主机端模式提示
       OnMaster();
     }
     else
     {
+
       OnSlave();
     }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
+
   /* USER CODE END 3 */
 }
 

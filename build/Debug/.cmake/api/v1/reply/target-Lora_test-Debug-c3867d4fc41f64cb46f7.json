@@ -134,7 +134,8 @@
 				33,
 				34,
 				35,
-				36
+				36,
+				37
 			]
 		},
 		{
@@ -189,7 +190,7 @@
 			"language" : "ASM",
 			"sourceIndexes" : 
 			[
-				37
+				38
 			]
 		}
 	],
@@ -258,14 +259,15 @@
 				33,
 				34,
 				35,
-				36
+				36,
+				37
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				37
+				38
 			]
 		}
 	],
@@ -347,6 +349,12 @@
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
 			"path" : "Core/Src/usart.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Core/Src/dma.c",
 			"sourceGroupIndex" : 0
 		},
 		{

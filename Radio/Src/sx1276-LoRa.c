@@ -101,20 +101,20 @@ const int32_t HoppingFrequencies[] =
 tLoRaSettings LoRaSettings =
     {
         434000000, // RFFrequency
-        8,         // Power
+        0,         // Power
         8,         // SignalBw [0: 7.8kHz, 1: 10.4 kHz, 2: 15.6 kHz, 3: 20.8 kHz, 4: 31.2 kHz,
                    // 5: 41.6 kHz, 6: 62.5 kHz, 7: 125 kHz, 8: 250 kHz, 9: 500 kHz, other: Reserved]
         10,        // SpreadingFactor [6: 64, 7: 128, 8: 256, 9: 512, 10: 1024, 11: 2048, 12: 4096  chips]
         2,         // ErrorCoding [1: 4/5, 2: 4/6, 3: 4/7, 4: 4/8]
-        false,     // CrcOn [0: OFF, 1: ON]
+        true,      // CrcOn [0: OFF, 1: ON]
         true,      // ImplicitHeaderOn [0: OFF, 1: ON]
         1,         // RxSingleOn [0: Continuous, 1 Single]
         0,         // FreqHopOn [0: OFF, 1: ON]
         4,         // HopPeriod Hops every frequency hopping period symbols
         1000,      // TxPacketTimeout
-        1000,      // RxPacketTimeout
+        500,       // RxPacketTimeout
         10,        // PayloadLength (used for implicit header mode)
-        0x10,      // SyncWord (LORA [0x34: 868 MHz, 0x12: 433 MHz, 0x18: 780 MHz, 0x24: 470 MHz, 0x34: 868 MHz])
+        0x03,      // SyncWord (LORA [0x34: 868 MHz, 0x12: 433 MHz, 0x18: 780 MHz, 0x24: 470 MHz, 0x34: 868 MHz])
 };
 
 /*!
@@ -224,14 +224,14 @@ void SX1276LoRaReset(void)
 
     // Wait 1ms
     startTick = GET_TICK_COUNT();
-    while ((GET_TICK_COUNT() - startTick) < TICK_RATE_MS(1))
+    while ((GET_TICK_COUNT() - startTick) < TICK_RATE_MS(200))
         ;
 
     SX1276SetReset(RADIO_RESET_OFF);
 
     // Wait 6ms
     startTick = GET_TICK_COUNT();
-    while ((GET_TICK_COUNT() - startTick) < TICK_RATE_MS(6))
+    while ((GET_TICK_COUNT() - startTick) < TICK_RATE_MS(20))
         ;
 }
 
@@ -363,20 +363,24 @@ uint32_t SX1276LoRaProcess(void)
     case RFLR_STATE_IDLE:
 
         SX1276LoRaSetOpMode(RFLR_OPMODE_SLEEP);
+        return result = RF_IDLE; // LoRa状态机进入空闲状态
 
         break;
     case RFLR_STATE_RX_INIT:
 
         SX1276LoRaSetOpMode(RFLR_OPMODE_STANDBY); // 设置LoRa为待机模式
 
-        SX1276LR->RegIrqFlagsMask = RFLR_IRQFLAGS_RXTIMEOUT |
-                                    // RFLR_IRQFLAGS_RXDONE |
-                                    // RFLR_IRQFLAGS_PAYLOADCRCERROR |
-                                    RFLR_IRQFLAGS_VALIDHEADER |
-                                    RFLR_IRQFLAGS_TXDONE |
-                                    RFLR_IRQFLAGS_CADDONE |
-                                    // RFLR_IRQFLAGS_FHSSCHANGEDCHANNEL |
-                                    RFLR_IRQFLAGS_CADDETECTED;
+        SX1276LR->RegIrqFlagsMask =
+            // RFLR_IRQFLAGS_FHSSCHANGEDCHANNEL |
+            // RFLR_IRQFLAGS_RXDONE |
+            // RFLR_IRQFLAGS_PAYLOADCRCERROR |
+            // 以上原本是注释掉了的
+            RFLR_IRQFLAGS_RXTIMEOUT |
+            RFLR_IRQFLAGS_VALIDHEADER |
+            RFLR_IRQFLAGS_TXDONE |
+            RFLR_IRQFLAGS_CADDONE |
+            RFLR_IRQFLAGS_CADDETECTED;
+
         SX1276Write(REG_LR_IRQFLAGSMASK, SX1276LR->RegIrqFlagsMask);
         if (LoRaSettings.FreqHopOn == true)
         {
@@ -449,24 +453,6 @@ uint32_t SX1276LoRaProcess(void)
             if ((GET_TICK_COUNT() - RxTimeoutTimer) > PacketTimeout)
             {
                 RFLRState = RFLR_STATE_RX_TIMEOUT; // 状态机进入超时状态
-                // RFLRState = RFLR_STATE_RX_INIT; // 重新进入接收初始化状态
-                // LoRaSettings.SyncWordValue++;
-                // 增加变更同步字的处理
-                // 重新设置LoRa参数
-                // RFLRState = RFLR_STATE_IDLE;
-                // SX1276LoRaSetOpMode(RFLR_OPMODE_SLEEP); // 睡眠状态为设置参数准备工作环境
-                // SX1276LoRaSetRFFrequency(LoRaSettings.RFFrequency);           // 设置射频频率
-                // SX1276LoRaSetSpreadingFactor(LoRaSettings.SpreadingFactor);   // 设置扩频因子
-                // SX1276LoRaSetErrorCoding(LoRaSettings.ErrorCoding);           // 设置纠错编码
-                // SX1276LoRaSetPacketCrcOn(LoRaSettings.CrcOn);                 // 设置CRC校验开关
-                // SX1276LoRaSetSignalBandwidth(LoRaSettings.SignalBw);          // 设置信号带宽
-                // SX1276LoRaSetSyncWord(0x10); // 设置同步字
-                // SX1276LoRaSetImplicitHeaderOn(LoRaSettings.ImplicitHeaderOn); // 设置隐式头模式开关
-                // SX1276LoRaSetSymbTimeout(0x3FF);                              // 设置符号超时时间
-                // SX1276LoRaSetPayloadLength(LoRaSettings.PayloadLength);       // 设置有效载荷长度
-                // HAL_UART_Transmit(&huart1, (uint8_t *)"RxSingleOn Timeout\r\n", 21, HAL_MAX_DELAY);
-                // SX1276LoRaSetOpMode(RFLR_OPMODE_STANDBY);
-                // RFLRState = RFLR_STATE_RX_INIT; // 重新进入接收初始化状态
             }
         }
         break;
@@ -578,7 +564,7 @@ uint32_t SX1276LoRaProcess(void)
         result = RF_RX_DONE;
         break;
     case RFLR_STATE_RX_TIMEOUT:
-        RFLRState = RFLR_STATE_RX_INIT;
+        // RFLRState = RFLR_STATE_RX_INIT;
         result = RF_RX_TIMEOUT;
         break;
     case RFLR_STATE_TX_INIT:
@@ -650,8 +636,10 @@ uint32_t SX1276LoRaProcess(void)
         RFLRState = RFLR_STATE_TX_RUNNING;
         break;
     case RFLR_STATE_TX_RUNNING:
+        //
         if (DIO0 == 1) // TxDone
         {
+            HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nTX Running\r\n", 15); // 发送数据包
             // Clear Irq
             SX1276Write(REG_LR_IRQFLAGS, RFLR_IRQFLAGS_TXDONE);
             RFLRState = RFLR_STATE_TX_DONE;
@@ -714,7 +702,7 @@ uint32_t SX1276LoRaProcess(void)
                 // 清除中断标志
                 SX1276Write(REG_LR_IRQFLAGS, RFLR_IRQFLAGS_CADDETECTED);
                 // CAD检测到，表示存在LoRa前导码
-                RFLRState = RFLR_STATE_RX_INIT;                                        // 监测到有信号后，进入接收模式
+                // RFLRState = RFLR_STATE_RX_INIT;                                        // 监测到有信号后，进入接收模式
                 result = RF_CHANNEL_ACTIVITY_DETECTED;                                 // 检测到信道活动
                                                                                        // HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD Detected\r\n", 14, 1000); // 调试输出
                 HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nCAD Detected\r\n", 14); // 发送数据包
@@ -724,7 +712,7 @@ uint32_t SX1276LoRaProcess(void)
                 // 设备会自动进入待机模式
                 // RFLRState = RFLR_STATE_IDLE;
 
-                RFLRState = RFLR_STATE_CAD_INIT;
+                // RFLRState = RFLR_STATE_CAD_INIT;
 
                 // HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD NOT Detected\r\n", 14, 1000); // 调试输出
                 HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nCAD NOT Detected\r\n", 14); // 发送数据包
@@ -748,7 +736,7 @@ void SX1276LoRaEnterCadMode(uint8_t state)
 void SX1276LoRaParameterChange(uint8_t syncword)
 {
     // 重新设置LoRa参数
-    RFLRState = RFLR_STATE_IDLE;
+    SX1276LoRaSetOpMode(RFLR_OPMODE_STANDBY);
 
     // SX1276LoRaSetRFFrequency(LoRaSettings.RFFrequency);           // 设置射频频率
     // SX1276LoRaSetSpreadingFactor(LoRaSettings.SpreadingFactor);   // 设置扩频因子
@@ -756,11 +744,12 @@ void SX1276LoRaParameterChange(uint8_t syncword)
     // SX1276LoRaSetPacketCrcOn(LoRaSettings.CrcOn);                 // 设置CRC校验开关
     // SX1276LoRaSetSignalBandwidth(LoRaSettings.SignalBw);          // 设置信号带宽
     SX1276LoRaSetSyncWord(syncword); // 设置同步字
+
     // SX1276LoRaSetImplicitHeaderOn(LoRaSettings.ImplicitHeaderOn); // 设置隐式头模式开关
     // SX1276LoRaSetSymbTimeout(0x3FF);                              // 设置符号超时时间
     // SX1276LoRaSetPayloadLength(LoRaSettings.PayloadLength);       // 设置有效载荷长度
 
-    SX1276LoRaSetOpMode(RFLR_OPMODE_STANDBY);
+    RFLRState = RFLR_STATE_CAD_INIT; // process()函数首先会判断RFLRState的状态，然后执行相关操作。
 }
 
 #endif // USE_SX1276_RADIO

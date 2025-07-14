@@ -79,6 +79,12 @@
 },
 {
   "directory": "D:/Arm/AppData/Lora_test/build/Debug",
+  "command": "D:\\Arm\\STM32CubeCLT_1.15.1\\GNU-tools-for-STM32\\bin\\arm-none-eabi-gcc.exe -DDEBUG -DSTM32F030x8 -DUSE_HAL_DRIVER -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Core/Inc -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Radio/Inc -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/STM32F0xx_HAL_Driver/Inc -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F0xx/Include -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m0  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m0  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\Lora_test.dir\\Core\\Src\\dma.c.obj -c D:\\Arm\\AppData\\Lora_test\\Core\\Src\\dma.c",
+  "file": "D:\\Arm\\AppData\\Lora_test\\Core\\Src\\dma.c",
+  "output": "CMakeFiles\\Lora_test.dir\\Core\\Src\\dma.c.obj"
+},
+{
+  "directory": "D:/Arm/AppData/Lora_test/build/Debug",
   "command": "D:\\Arm\\STM32CubeCLT_1.15.1\\GNU-tools-for-STM32\\bin\\arm-none-eabi-gcc.exe -DDEBUG -DSTM32F030x8 -DUSE_HAL_DRIVER -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Core/Inc -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Radio/Inc -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/STM32F0xx_HAL_Driver/Inc -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F0xx/Include -ID:/Arm/AppData/Lora_test/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m0  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m0  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\Lora_test.dir\\Core\\Src\\stm32f0xx_it.c.obj -c D:\\Arm\\AppData\\Lora_test\\Core\\Src\\stm32f0xx_it.c",
   "file": "D:\\Arm\\AppData\\Lora_test\\Core\\Src\\stm32f0xx_it.c",
   "output": "CMakeFiles\\Lora_test.dir\\Core\\Src\\stm32f0xx_it.c.obj"

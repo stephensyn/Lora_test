@@ -56,7 +56,7 @@ typedef struct sLoRaSettings
 // LoRa
 typedef enum
 {
-    RFLR_STATE_IDLE,
+    RFLR_STATE_IDLE,//
     RFLR_STATE_RX_INIT,
     RFLR_STATE_RX_RUNNING,
     RFLR_STATE_RX_DONE,
