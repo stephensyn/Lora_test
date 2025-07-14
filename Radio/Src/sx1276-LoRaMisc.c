@@ -48,7 +48,7 @@
 
 extern tLoRaSettings LoRaSettings;
 
-void SX1276LoRaSetRFFrequency(uint32_t freq)
+void SX1276LoRaSetRFFrequency(uint32_t freq)//设置射频频率
 {
     LoRaSettings.RFFrequency = freq;
 
@@ -59,7 +59,7 @@ void SX1276LoRaSetRFFrequency(uint32_t freq)
     SX1276WriteBuffer(REG_LR_FRFMSB, &SX1276LR->RegFrfMsb, 3);
 }
 
-uint32_t SX1276LoRaGetRFFrequency(void)
+uint32_t SX1276LoRaGetRFFrequency(void)//获取射频频率
 {
     SX1276ReadBuffer(REG_LR_FRFMSB, &SX1276LR->RegFrfMsb, 3);
     LoRaSettings.RFFrequency = ((uint32_t)SX1276LR->RegFrfMsb << 16) | ((uint32_t)SX1276LR->RegFrfMid << 8) | ((uint32_t)SX1276LR->RegFrfLsb);
@@ -68,7 +68,7 @@ uint32_t SX1276LoRaGetRFFrequency(void)
     return LoRaSettings.RFFrequency;
 }
 
-void SX1276LoRaSetRFPower(int8_t power)
+void SX1276LoRaSetRFPower(int8_t power)//设置射频功率
 {
     SX1276Read(REG_LR_PACONFIG, &SX1276LR->RegPaConfig);
     SX1276Read(REG_LR_PADAC, &SX1276LR->RegPaDac);
@@ -119,7 +119,7 @@ void SX1276LoRaSetRFPower(int8_t power)
     LoRaSettings.Power = power;
 }
 
-int8_t SX1276LoRaGetRFPower(void)
+int8_t SX1276LoRaGetRFPower(void)//获取射频功率
 {
     SX1276Read(REG_LR_PACONFIG, &SX1276LR->RegPaConfig);
     SX1276Read(REG_LR_PADAC, &SX1276LR->RegPaDac);
@@ -142,7 +142,7 @@ int8_t SX1276LoRaGetRFPower(void)
     return LoRaSettings.Power;
 }
 
-void SX1276LoRaSetSignalBandwidth(uint8_t bw)
+void SX1276LoRaSetSignalBandwidth(uint8_t bw)///设置信号带宽
 {
     SX1276Read(REG_LR_MODEMCONFIG1, &SX1276LR->RegModemConfig1);
     SX1276LR->RegModemConfig1 = (SX1276LR->RegModemConfig1 & RFLR_MODEMCONFIG1_BW_MASK) | (bw << 4);
@@ -150,14 +150,14 @@ void SX1276LoRaSetSignalBandwidth(uint8_t bw)
     LoRaSettings.SignalBw = bw;
 }
 
-uint8_t SX1276LoRaGetSignalBandwidth(void)
+uint8_t SX1276LoRaGetSignalBandwidth(void) //获取信号带宽
 {
     SX1276Read(REG_LR_MODEMCONFIG1, &SX1276LR->RegModemConfig1);
     LoRaSettings.SignalBw = (SX1276LR->RegModemConfig1 & ~RFLR_MODEMCONFIG1_BW_MASK) >> 4;
     return LoRaSettings.SignalBw;
 }
 
-void SX1276LoRaSetSpreadingFactor(uint8_t factor)
+void SX1276LoRaSetSpreadingFactor(uint8_t factor)//设置扩频因子
 {
 
     if (factor > 12)
@@ -184,14 +184,14 @@ void SX1276LoRaSetSpreadingFactor(uint8_t factor)
     LoRaSettings.SpreadingFactor = factor;
 }
 
-uint8_t SX1276LoRaGetSpreadingFactor(void)
+uint8_t SX1276LoRaGetSpreadingFactor(void)//获取扩频因子
 {
     SX1276Read(REG_LR_MODEMCONFIG2, &SX1276LR->RegModemConfig2);
     LoRaSettings.SpreadingFactor = (SX1276LR->RegModemConfig2 & ~RFLR_MODEMCONFIG2_SF_MASK) >> 4;
     return LoRaSettings.SpreadingFactor;
 }
 
-void SX1276LoRaSetErrorCoding(uint8_t value)
+void SX1276LoRaSetErrorCoding(uint8_t value)//设置纠错编码
 {
     SX1276Read(REG_LR_MODEMCONFIG1, &SX1276LR->RegModemConfig1);
     SX1276LR->RegModemConfig1 = (SX1276LR->RegModemConfig1 & RFLR_MODEMCONFIG1_CODINGRATE_MASK) | (value << 1);
@@ -214,7 +214,7 @@ void SX1276LoRaSetPacketCrcOn(bool enable)
     LoRaSettings.CrcOn = enable;
 }
 
-void SX1276LoRaSetPreambleLength(uint16_t value)
+void SX1276LoRaSetPreambleLength(uint16_t value)//设置前导码长度
 {
     SX1276ReadBuffer(REG_LR_PREAMBLEMSB, &SX1276LR->RegPreambleMsb, 2);
 
@@ -412,6 +412,10 @@ uint8_t SX1276LoRaGetNbTrigPeaks(void)
     return (SX1276LR->RegDetectOptimize & 0x07);
 }
 
+/*
+调用这个函数进行同步设置时，需要收让芯片进入待机模式或者睡眠模式
+SX1276SetOpMode(RFLR_OPMODE_STANDBY); // 确保芯片处于待机模式
+*/
 void SX1276LoRaSetSyncWord(uint8_t value)
 {
 
@@ -419,11 +423,11 @@ void SX1276LoRaSetSyncWord(uint8_t value)
     SX1276Read(REG_LR_SYNCWORD, &SX1276LR->RegSyncWord);
     // if (SX1276LR->RegSyncWord == LoRaSettings.SyncWordValue) //
     // {
-    char message[60];
+    static char message[60];
     snprintf(message, sizeof(message), "Warning: SyncWord mismatch! Expected=%d, Actual=%d", LoRaSettings.SyncWordValue, SX1276LR->RegSyncWord);
-    HAL_UART_Transmit(&huart1, (uint8_t *)message, strlen(message), HAL_MAX_DELAY);
-    // HAL_UART_Transmit_IT(&huart1, (uint8_t *)message, strlen(message)); // Send newline for better readability
-    // HAL_UART_Transmit_IT(&huart1, (uint8_t *)"hello\r\n", 10);
+    // HAL_UART_Transmit(&huart1, (uint8_t *)message, strlen(message), HAL_MAX_DELAY);
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)message, strlen(message)); // 启动时发送提示信息
+ 
 
     // }
 }

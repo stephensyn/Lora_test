@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
@@ -82,6 +83,7 @@ extern tLoRaSettings LoRaSettings; // 声明为外部变量
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 // 检查连续3次接收数据是否都不同的函数
 static bool check_three_different_rx(uint8_t *current_data, uint16_t current_len)
@@ -152,7 +154,8 @@ void OnMaster(void)
 
     if (num_rx > 0)
     {
-      HAL_UART_Transmit(&huart1, RXBuffer, num_rx, HAL_MAX_DELAY);
+      // HAL_UART_Transmit(&huart1, RXBuffer, num_rx, HAL_MAX_DELAY);
+      HAL_UART_Transmit_DMA(&huart1, RXBuffer, num_rx); // 使用DMA发送数据包
       // crc_value = RXBuffer[num_rx - 2];
       // crc_value <<= 8;
       // crc_value |= RXBuffer[num_rx - 1];
@@ -226,7 +229,8 @@ void OnSlave(void)
       // 更新接收历史记录
       // update_rx_history(RXBuffer, num_rx);
 
-      HAL_UART_Transmit(&huart1, RXBuffer, num_rx, HAL_MAX_DELAY);
+      // HAL_UART_Transmit(&huart1, RXBuffer, num_rx, HAL_MAX_DELAY);
+      HAL_UART_Transmit_DMA(&huart1, RXBuffer, num_rx); // 使用DMA发送数据包
       // crc_value = RXBuffer[num_rx - 2];
       // crc_value <<= 8;
       // crc_value |= RXBuffer[num_rx - 1];
@@ -305,9 +309,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_SPI2_Init();
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t *)"Radio Demo Start\r\n", 18); // 启动时发送提示信息
+  MX_NVIC_Init(); // NVIC配置
+
   /* USER CODE BEGIN 2 */
   Radio = RadioDriverInit();
   if (Radio != NULL)
@@ -407,7 +413,16 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+/**
+ * @brief NVIC Configuration.
+ * @retval None
+ */
+static void MX_NVIC_Init(void)
+{
+  /* EXTI0_1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+}
 /* USER CODE END 4 */
 
 /**

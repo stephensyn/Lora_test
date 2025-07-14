@@ -70,7 +70,7 @@ void SX1276Init(void)
 
     LoRaOn = true;
     LoRaOnState = false;
-    SX1276SetLoRaOn(LoRaOn);
+    SX1276SetLoRaOn(LoRaOn);// 设置LoRa模式开关
     // Initialize LoRa modem
     SX1276LoRaInit();
 

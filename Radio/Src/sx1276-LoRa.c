@@ -152,10 +152,8 @@ static uint16_t TxPacketSize = 0;
 
 void SX1276LoRaInit(void)
 {
-    RFLRState = RFLR_STATE_IDLE;
-
+    RFLRState = RFLR_STATE_IDLE; // LoRa状态机初始化为IDLE状态
     SX1276LoRaSetDefaults();
-
     SX1276ReadBuffer(REG_LR_OPMODE, SX1276Regs + 1, 0x70 - 1);
 
     // set the RF settings
@@ -369,7 +367,7 @@ uint32_t SX1276LoRaProcess(void)
         break;
     case RFLR_STATE_RX_INIT:
 
-        SX1276LoRaSetOpMode(RFLR_OPMODE_STANDBY);
+        SX1276LoRaSetOpMode(RFLR_OPMODE_STANDBY); // 设置LoRa为待机模式
 
         SX1276LR->RegIrqFlagsMask = RFLR_IRQFLAGS_RXTIMEOUT |
                                     // RFLR_IRQFLAGS_RXDONE |
@@ -716,9 +714,10 @@ uint32_t SX1276LoRaProcess(void)
                 // 清除中断标志
                 SX1276Write(REG_LR_IRQFLAGS, RFLR_IRQFLAGS_CADDETECTED);
                 // CAD检测到，表示存在LoRa前导码
-                RFLRState = RFLR_STATE_RX_INIT;                                          // 监测到有信号后，进入接收模式
-                result = RF_CHANNEL_ACTIVITY_DETECTED;                                   // 检测到信道活动
-                HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD Detected\r\n", 14, 1000); // 调试输出
+                RFLRState = RFLR_STATE_RX_INIT;                                        // 监测到有信号后，进入接收模式
+                result = RF_CHANNEL_ACTIVITY_DETECTED;                                 // 检测到信道活动
+                                                                                       // HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD Detected\r\n", 14, 1000); // 调试输出
+                HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nCAD Detected\r\n", 14); // 发送数据包
             }
             else
             {
@@ -727,7 +726,8 @@ uint32_t SX1276LoRaProcess(void)
 
                 RFLRState = RFLR_STATE_CAD_INIT;
 
-                HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD NOT Detected\r\n", 14, 1000); // 调试输出
+                // HAL_UART_Transmit(&huart1, (uint8_t *)"\r\nCAD NOT Detected\r\n", 14, 1000); // 调试输出
+                HAL_UART_Transmit_DMA(&huart1, (uint8_t *)"\r\nCAD NOT Detected\r\n", 14); // 发送数据包
                 result = RF_CHANNEL_EMPTY;
                 // HAL_Delay(1000); // 信道空闲
             }
